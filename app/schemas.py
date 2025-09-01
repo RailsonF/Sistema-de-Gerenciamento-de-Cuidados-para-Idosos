@@ -1,7 +1,23 @@
 from pydantic import BaseModel
 from datetime import date
+from typing import List
 
-#Schema base com campos comuns
+#---- Schemas para Responsável ----#
+class ResponsavelBase(BaseModel):
+  nome_completo: str
+  cpf: str
+  telefone: str | None = None
+  email: str | None = None
+
+class ResponsavelCreate(ResponsavelBase):
+  pass
+
+class Responsavel(ResponsavelBase):
+  id: int
+  class Config:
+    orm_mode: True
+
+#---- Schema para idoso ----#
 class idosoBase(BaseModel):
   nome_completo: str
   cpf: str

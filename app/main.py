@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session #Importa a classe FastAPi
+from typing import List
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
@@ -31,3 +32,8 @@ def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
     # if db_idoso:
     #     raise HTTPException(status_code=400, detail="CPF já cadastrado")
     return crud.create_idoso(db=db, idoso=idoso)
+
+@app.get("/idosos/", response_model=List[schemas.Idoso])
+def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
+    idosos = crud.get_idosos(db, skip= skip, limit=limit)
+    return idosos
