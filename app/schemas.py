@@ -15,7 +15,7 @@ class ResponsavelCreate(ResponsavelBase):
 class Responsavel(ResponsavelBase):
   id: int
   class Config:
-    orm_mode: True
+    orm_mode = True
 
 #---- Schema para idoso ----#
 class idosoBase(BaseModel):
@@ -32,6 +32,7 @@ class IdosoCreate(idosoBase):
 #Schema completo para retornar os dados (o que enviamos da API)
 class Idoso(idosoBase):
   id: int
+  responsavel: Responsavel | None = None
 
   class Config:
     #Permite ao Pydantic ler os dados diretamente de objetos SQLAlchemy.

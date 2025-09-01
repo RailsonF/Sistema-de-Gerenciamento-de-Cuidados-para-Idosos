@@ -37,3 +37,17 @@ def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
 def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
     idosos = crud.get_idosos(db, skip= skip, limit=limit)
     return idosos
+
+# --- ENDPOINTS PARA RESPONSAVEIS ---
+
+@app.post("/responsaveis/", response_model=schemas.Responsavel)
+def criar_novo_responsavel(responsavel: schemas.ResponsavelCreate, db: Session = Depends(get_db)):
+    db_responsavel = crud.get_responsavel_by_cpf(db, cpf=responsavel.cpf)
+    if db_responsavel:
+        raise HTTPException(status_code=400, detail="CPF do responsável já cadastrado")
+    return crud.create_responsavel(db=db, responsavel=responsavel)
+
+@app.get("/responsaveis/", response_model=List[schemas.Responsavel])
+def ler_responsaveis(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    responsaveis = crud.get_responsaveis(db, skip=skip, limit=limit)
+    return responsaveis
