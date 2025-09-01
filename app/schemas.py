@@ -2,6 +2,35 @@ from pydantic import BaseModel
 from datetime import date
 from typing import List
 
+#---- Schemas para Medicamento ----#
+class MedicamentoBase(BaseModel):
+    nome: str
+    unidade_medida: str
+
+class MedicamentoCreate(MedicamentoBase):
+    pass
+
+class Medicamento(MedicamentoBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+#---- Schemas para Prescricao ----#
+class PrescricaoBase(BaseModel):
+    dosagem: str
+    horario_prescrito: time
+    id_idoso: int
+    id_medicamento: int
+
+class PrescricaoCreate(PrescricaoBase):
+    pass
+
+class Prescricao(PrescricaoBase):
+    id: int
+    medicamento: Medicamento # Para aninhar os dados do medicamento
+    class Config:
+        orm_mode = True
+
 #---- Schemas para Responsável ----#
 class ResponsavelBase(BaseModel):
   nome_completo: str
@@ -33,6 +62,7 @@ class IdosoCreate(idosoBase):
 class Idoso(idosoBase):
   id: int
   responsavel: Responsavel | None = None
+  prescricoes: List[Prescricao] = [] #Um idoso pode ter varias prescrições
 
   class Config:
     #Permite ao Pydantic ler os dados diretamente de objetos SQLAlchemy.
