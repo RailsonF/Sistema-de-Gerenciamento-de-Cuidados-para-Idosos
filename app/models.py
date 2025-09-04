@@ -28,7 +28,9 @@ class Idoso(Base):
     # Esta linha cria a relação no lado do Python
     responsavel = relationship("Responsavel", back_populates="idosos")
     # Relacionamento com Medicamento
-    medicamentos = relationship("Prescricao", back_populates="medicamento")
+    prescricoes = relationship("Prescricao", back_populates="idoso")
+
+
 
 class Medicamento(Base):
     __tablename__ = "medicamentos"

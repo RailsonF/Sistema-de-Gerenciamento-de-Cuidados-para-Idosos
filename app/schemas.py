@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, time
 from typing import List
 
 #---- Schemas para Medicamento ----#

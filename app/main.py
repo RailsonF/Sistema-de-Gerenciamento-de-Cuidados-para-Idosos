@@ -6,6 +6,10 @@ from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
 from . import models #Importa os modelos
  
+
+# Adicione esta linha temporariamente para apagar as tabelas
+models.Base.metadata.drop_all(bind=engine) 
+
 #Cria as tabelas no banco de dados
 models.Base.metadata.create_all(bind=engine)
 
@@ -51,3 +55,33 @@ def criar_novo_responsavel(responsavel: schemas.ResponsavelCreate, db: Session =
 def ler_responsaveis(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     responsaveis = crud.get_responsaveis(db, skip=skip, limit=limit)
     return responsaveis
+
+# app/main.py
+
+# ... (todo o código anterior continua aqui) ...
+
+# --- ENDPOINTS PARA MEDICAMENTOS ---
+
+@app.post("/medicamentos/", response_model=schemas.Medicamento)
+def criar_novo_medicamento(medicamento: schemas.MedicamentoCreate, db: Session = Depends(get_db)):
+    return crud.create_medicamento(db=db, medicamento=medicamento)
+
+@app.get("/medicamentos/", response_model=List[schemas.Medicamento])
+def ler_medicamentos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    medicamentos = crud.get_medicamentos(db, skip=skip, limit=limit)
+    return medicamentos
+
+# --- ENDPOINTS PARA PRESCRIÇÕES ---
+
+@app.post("/prescricoes/", response_model=schemas.Prescricao)
+def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = Depends(get_db)):
+    # Validação: Verificar se o idoso e o medicamento existem antes de criar a prescrição
+    db_idoso = crud.get_idoso(db, idoso_id=prescricao.id_idoso)
+    if not db_idoso:
+        raise HTTPException(status_code=404, detail="Idoso não encontrado")
+
+    db_medicamento = crud.get_medicamento(db, medicamento_id=prescricao.id_medicamento)
+    if not db_medicamento:
+        raise HTTPException(status_code=404, detail="Medicamento não encontrado")
+
+    return crud.create_prescricao(db=db, prescricao=prescricao)
