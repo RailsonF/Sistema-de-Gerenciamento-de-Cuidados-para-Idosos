@@ -8,10 +8,10 @@ from . import models #Importa os modelos
  
 
 # Adicione esta linha temporariamente para apagar as tabelas
-models.Base.metadata.drop_all(bind=engine) 
+#models.Base.metadata.drop_all(bind=engine) 
 
 #Cria as tabelas no banco de dados
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
@@ -20,6 +20,7 @@ app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
 @app.get("/", tags=["Root"])
 async def ler_raiz():
   return {"Status": "API conectada ao banco de dados "}
+
 
 # Função "Dependency" para gerenciar a sessão do banco de dados
 def get_db():
@@ -85,3 +86,7 @@ def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = De
         raise HTTPException(status_code=404, detail="Medicamento não encontrado")
 
     return crud.create_prescricao(db=db, prescricao=prescricao)
+
+@app.post("/prescricoes/{prescricao_id}/administrar")
+def registrar_administracao(prescricao_id: int, db: Session = Depends(get_db)):
+    return crud.create_administracao_log(db=db, id_prescricao=prescricao_id)

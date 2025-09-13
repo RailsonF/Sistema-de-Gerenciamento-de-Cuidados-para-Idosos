@@ -69,3 +69,11 @@ def create_prescricao(db: Session, prescricao: schemas.PrescricaoCreate):
     db.commit()
     db.refresh(db_prescricao)
     return db_prescricao
+
+# --- Funções CRUD para AdministracaoLog ---
+def create_administracao_log(db: Session, id_prescricao: int):
+    db_log = models.AdministracaoLog(id_prescricao=id_prescricao)
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from datetime import date, time
+from datetime import datetime, date, time
 from typing import List
 
 #---- Schemas para Medicamento ----#
@@ -13,7 +13,7 @@ class MedicamentoCreate(MedicamentoBase):
 class Medicamento(MedicamentoBase):
     id: int
     class Config:
-        orm_mode = True
+        from_atributes = True
 
 #---- Schemas para Prescricao ----#
 class PrescricaoBase(BaseModel):
@@ -29,7 +29,7 @@ class Prescricao(PrescricaoBase):
     id: int
     medicamento: Medicamento # Para aninhar os dados do medicamento
     class Config:
-        orm_mode = True
+        from_atributes = True
 
 #---- Schemas para Responsável ----#
 class ResponsavelBase(BaseModel):
@@ -44,7 +44,7 @@ class ResponsavelCreate(ResponsavelBase):
 class Responsavel(ResponsavelBase):
   id: int
   class Config:
-    orm_mode = True
+    from_atributes = True
 
 #---- Schema para idoso ----#
 class idosoBase(BaseModel):
@@ -66,4 +66,17 @@ class Idoso(idosoBase):
 
   class Config:
     #Permite ao Pydantic ler os dados diretamente de objetos SQLAlchemy.
-    orm_mode = True
+    from_atributes = True
+
+class AdministracaoLogBase(BaseModel):
+   id_prescricao: int
+  
+class AdministracaoLogcreate(AdministracaoLogBase):
+   pass
+
+class AdministracaoLog(AdministracaoLogBase):
+   id: int
+   data_hora_administrcao: datetime
+
+   class Config:
+      from_atributes = True

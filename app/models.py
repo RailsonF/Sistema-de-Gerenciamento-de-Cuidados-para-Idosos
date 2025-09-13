@@ -1,7 +1,8 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Time
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Time, DateTime
 from sqlalchemy.orm import relationship
 from .database import Base
+import datetime
 
 class Responsavel(Base):
     __tablename__ = "responsaveis"
@@ -40,6 +41,15 @@ class Medicamento(Base):
     unidade_medida = Column(String, ) # Ex: "mg", "ml", "comprimido(s)"
     # Relacionamento com Prescricao
     prescricoes = relationship("Prescricao", back_populates="medicamento")
+
+class AdministracaoLog(Base):
+    __tablename__ = "administracao_log"
+    id = Column(Integer, primary_key=True, index=True)
+    data_hora_administracao = Column(DateTime, default=datetime.datetime.now )
+    id_prescricao = Column(Integer, ForeignKey("prescricoes.id"))
+
+    prescricao = relationship("Prescricao",back_populates="administracoes")
+
 class Prescricao(Base):
     __tablename__ = "prescricoes"
     id = Column(Integer, primary_key=True, index=True)
@@ -50,3 +60,4 @@ class Prescricao(Base):
     # Relações com Idoso e Medicamento
     idoso = relationship("Idoso", back_populates="prescricoes")
     medicamento = relationship("Medicamento", back_populates="prescricoes")
+    administracoes = relationship("AdministracaoLog", back_populates="prescricao")
