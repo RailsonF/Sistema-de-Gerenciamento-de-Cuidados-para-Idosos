@@ -80,3 +80,21 @@ class AdministracaoLog(AdministracaoLogBase):
 
    class Config:
       from_atributes = True
+
+# ---SCHEMAS PARA O MONITOR ---
+class MonitorPrescricao(BaseModel):
+   id_prescricao: int
+   horario_prescrito: time
+   dosagem: str
+   nome_idoso: str
+   quarto_idoso: str | None
+   nome_medicamento: str
+
+   class Config:
+    from_atributes = True
+
+# Descreve a estrutura final da resposta do endpoint /monitor
+class MonitorData(BaseModel):
+    proximos: List[MonitorPrescricao]
+    na_hora: List[MonitorPrescricao]
+    urgentes: List[MonitorPrescricao]

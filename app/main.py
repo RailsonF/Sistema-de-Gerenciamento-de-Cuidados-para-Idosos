@@ -90,3 +90,9 @@ def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = De
 @app.post("/prescricoes/{prescricao_id}/administrar")
 def registrar_administracao(prescricao_id: int, db: Session = Depends(get_db)):
     return crud.create_administracao_log(db=db, id_prescricao=prescricao_id)
+
+# --- ENDPOINT DO MONITOR ---
+@app.get("/monitor/", response_model=schemas.MonitorData)
+def ler_dados_monitor(db: Session = Depends(get_db)):
+    dados = crud.get_monitor_data(db)
+    return dados

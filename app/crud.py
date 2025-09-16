@@ -1,6 +1,8 @@
 # app/crud.py
 
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
+from datetime import datetime, timedelta
 from . import models, schemas
 
 # --- Funções CRUD para Idoso ---
@@ -77,3 +79,55 @@ def create_administracao_log(db: Session, id_prescricao: int):
     db.commit()
     db.refresh(db_log)
     return db_log
+
+# --- LÓGICA DO MONITOR ---
+def get_monitor_data(db: Session):
+    agora = datetime.now().time()
+    hoje = datetime.now().date()
+
+    # 1. Encontra os IDs das prescrições administradas HOJE
+    ids_administrados_hoje = db.query(models.AdministracaoLog.id_prescricao).filter(
+        func.date(models.AdministracaoLog.data_hora_administracao) == hoje
+    )
+
+    # 2. Busca todas as prescrições pendentes (que não estão na lista de administradas hoje)
+    #    e já carrega os dados do idoso e do medicamento (eager loading)
+    prescricoes_pendentes = db.query(models.Prescricao).options(
+        joinedload(models.Prescricao.idoso),
+        joinedload(models.Prescricao.medicamento)
+    ).filter(models.Prescricao.id.notin_(ids_administrados_hoje)).all()
+
+    # 3. Classifica as prescrições pendentes
+    proximos = []
+    na_hora = []
+    urgentes = []
+
+    # Converte a hora atual para segundos para facilitar a comparação
+    agora_em_segundos = agora.hour * 3600 + agora.minute * 60 + agora.second
+
+    for p in prescricoes_pendentes:
+        horario_em_segundos = p.horario_prescrito.hour * 3600 + p.horario_prescrito.minute * 60
+
+        diferenca = horario_em_segundos - agora_em_segundos
+
+        item_monitor = {
+            "id_prescricao": p.id,
+            "horario_prescrito": p.horario_prescrito,
+            "dosagem": p.dosagem,
+            "nome_idoso": p.idoso.nome_completo,
+            "quarto_idoso": p.idoso.quarto,
+            "nome_medicamento": p.medicamento.nome
+        }
+
+        # Lógica de classificação
+        # "Urgente": mais de 20 minutos de atraso
+        if diferenca < -1200: # 20 minutos * 60 segundos
+            urgentes.append(item_monitor)
+        # "Na Hora": entre 20 minutos de atraso e o horário exato
+        elif -1200 <= diferenca <= 0:
+            na_hora.append(item_monitor)
+        # "Próximos": até 10 minutos antes do horário
+        elif 0 < diferenca <= 600: # 10 minutos * 60 segundos
+            proximos.append(item_monitor)
+
+    return {"proximos": proximos, "na_hora": na_hora, "urgentes": urgentes}
