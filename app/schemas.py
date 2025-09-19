@@ -98,3 +98,24 @@ class MonitorData(BaseModel):
     proximos: List[MonitorPrescricao]
     na_hora: List[MonitorPrescricao]
     urgentes: List[MonitorPrescricao]
+
+#Schemas para usuario
+class UsuarioBase(BaseModel):
+   nome_completo: str
+   email: str
+
+class UsuarioCreate(UsuarioBase):
+   password: str
+
+class Usuario(UsuarioBase):
+   id: int
+   is_active: bool
+   class Config:
+      from_atributes = True
+
+class Token(BaseModel):
+   access_token: str
+   token_type: str
+
+class TokenData(BaseModel):
+   email: str | None = None

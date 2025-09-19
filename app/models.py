@@ -1,5 +1,5 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Date, ForeignKey, Time, DateTime
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Time, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from .database import Base
 import datetime
@@ -31,8 +31,6 @@ class Idoso(Base):
     # Relacionamento com Medicamento
     prescricoes = relationship("Prescricao", back_populates="idoso")
 
-
-
 class Medicamento(Base):
     __tablename__ = "medicamentos"
 
@@ -61,3 +59,12 @@ class Prescricao(Base):
     idoso = relationship("Idoso", back_populates="prescricoes")
     medicamento = relationship("Medicamento", back_populates="prescricoes")
     administracoes = relationship("AdministracaoLog", back_populates="prescricao")
+
+#-- Usuários --
+class Usuario(Base):
+    __tablename__ = "usuarios"
+    id = Column(Integer, primary_key=True)
+    nome_completo = Column(String)
+    email = Column(String, unique=True, index=True)
+    senha_hash = Column(String)
+    is_active = Column(Boolean, default=True)

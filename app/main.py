@@ -5,16 +5,19 @@ from typing import List
 from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
 from . import models #Importa os modelos
- 
-
+from .dependencies import get_db
+from .routes import auth_routes
 # Adicione esta linha temporariamente para apagar as tabelas
 #models.Base.metadata.drop_all(bind=engine) 
 
 #Cria as tabelas no banco de dados
-#models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
+
+#Incluindo os roteadores na aplicação 
+app.include_router(auth_routes.router)
 
 #Criando um endpoint de teste
 @app.get("/", tags=["Root"])
@@ -23,12 +26,7 @@ async def ler_raiz():
 
 
 # Função "Dependency" para gerenciar a sessão do banco de dados
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
 
 @app.post("/idosos/", response_model=schemas.Idoso)
 def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):

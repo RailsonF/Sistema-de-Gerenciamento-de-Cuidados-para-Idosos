@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from datetime import datetime, timedelta
 from . import models, schemas
+from . import auth
+
 
 # --- Funções CRUD para Idoso ---
 def get_idoso(db: Session, idoso_id: int):
@@ -131,3 +133,20 @@ def get_monitor_data(db: Session):
             proximos.append(item_monitor)
 
     return {"proximos": proximos, "na_hora": na_hora, "urgentes": urgentes}
+
+# --- FUNÇÃO CRUD USUÁRIO ---
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.Usuario).filter(models.Usuario.email == email).first()
+def create_user(db: Session, usuario: schemas.UsuarioCreate):
+    # Pega a senha do schema e a transforma em um hash
+    hashed_password = auth.get_password_hash(usuario.password)
+    # Cria o objeto do modelo, substituindo a senha pelo hash
+    db_usuario = models.Usuario(
+        email=usuario.email,
+        nome_completo=usuario.nome_completo,
+        senha_hash=hashed_password
+    )
+    db.add(db_usuario)
+    db.commit()
+    db.refresh(db_usuario)
+    return db_usuario
