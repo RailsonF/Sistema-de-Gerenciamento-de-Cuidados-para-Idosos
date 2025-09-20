@@ -76,7 +76,7 @@ class AdministracaoLogcreate(AdministracaoLogBase):
 
 class AdministracaoLog(AdministracaoLogBase):
    id: int
-   data_hora_administrcao: datetime
+   data_hora_administracao: datetime
 
    class Config:
       from_atributes = True

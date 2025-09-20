@@ -75,8 +75,8 @@ def create_prescricao(db: Session, prescricao: schemas.PrescricaoCreate):
     return db_prescricao
 
 # --- Funções CRUD para AdministracaoLog ---
-def create_administracao_log(db: Session, id_prescricao: int):
-    db_log = models.AdministracaoLog(id_prescricao=id_prescricao)
+def create_administracao_log(db: Session, id_prescricao: int, id_usuario: int):
+    db_log = models.AdministracaoLog(id_prescricao=id_prescricao, id_usuario = id_usuario)
     db.add(db_log)
     db.commit()
     db.refresh(db_log)
@@ -135,7 +135,7 @@ def get_monitor_data(db: Session):
     return {"proximos": proximos, "na_hora": na_hora, "urgentes": urgentes}
 
 # --- FUNÇÃO CRUD USUÁRIO ---
-def get_user_by_email(db: Session, email: str):
+def get_usuario_by_email(db: Session, email: str):
     return db.query(models.Usuario).filter(models.Usuario.email == email).first()
 def create_user(db: Session, usuario: schemas.UsuarioCreate):
     # Pega a senha do schema e a transforma em um hash

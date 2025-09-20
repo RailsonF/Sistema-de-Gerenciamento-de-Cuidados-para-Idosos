@@ -40,14 +40,25 @@ class Medicamento(Base):
     # Relacionamento com Prescricao
     prescricoes = relationship("Prescricao", back_populates="medicamento")
 
+#-- Usuários --
+class Usuario(Base):
+    __tablename__ = "usuarios"
+    id = Column(Integer, primary_key=True)
+    nome_completo = Column(String)
+    email = Column(String, unique=True, index=True)
+    senha_hash = Column(String)
+    is_active = Column(Boolean, default=True)
+    administracoes = relationship("AdministracaoLog", back_populates="usuario")
+
 class AdministracaoLog(Base):
     __tablename__ = "administracao_log"
     id = Column(Integer, primary_key=True, index=True)
     data_hora_administracao = Column(DateTime, default=datetime.datetime.now )
     id_prescricao = Column(Integer, ForeignKey("prescricoes.id"))
+    id_usuario = Column(Integer, ForeignKey("usuarios.id"))
 
     prescricao = relationship("Prescricao",back_populates="administracoes")
-
+    usuario = relationship("Usuario", back_populates="administracoes")
 class Prescricao(Base):
     __tablename__ = "prescricoes"
     id = Column(Integer, primary_key=True, index=True)
@@ -60,11 +71,3 @@ class Prescricao(Base):
     medicamento = relationship("Medicamento", back_populates="prescricoes")
     administracoes = relationship("AdministracaoLog", back_populates="prescricao")
 
-#-- Usuários --
-class Usuario(Base):
-    __tablename__ = "usuarios"
-    id = Column(Integer, primary_key=True)
-    nome_completo = Column(String)
-    email = Column(String, unique=True, index=True)
-    senha_hash = Column(String)
-    is_active = Column(Boolean, default=True)

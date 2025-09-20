@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session #Importa a classe FastAPi
 from typing import List
-
+from .auth import get_current_user
 from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
 from . import models #Importa os modelos
@@ -11,7 +11,7 @@ from .routes import auth_routes
 #models.Base.metadata.drop_all(bind=engine) 
 
 #Cria as tabelas no banco de dados
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
@@ -85,9 +85,18 @@ def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = De
 
     return crud.create_prescricao(db=db, prescricao=prescricao)
 
-@app.post("/prescricoes/{prescricao_id}/administrar")
-def registrar_administracao(prescricao_id: int, db: Session = Depends(get_db)):
-    return crud.create_administracao_log(db=db, id_prescricao=prescricao_id)
+@app.post("/prescricoes/{prescricao_id}/administrar", response_model=schemas.AdministracaoLog)
+def registrar_administracao(
+    prescricao_id: int, 
+    db: Session = Depends(get_db),
+    current_user: schemas.Usuario = Depends(get_current_user)
+    ):
+    return crud.create_administracao_log(
+        db=db, 
+        id_prescricao=prescricao_id,
+        id_usuario= current_user.id
+        )
+
 
 # --- ENDPOINT DO MONITOR ---
 @app.get("/monitor/", response_model=schemas.MonitorData)
