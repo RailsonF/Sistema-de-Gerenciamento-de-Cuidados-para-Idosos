@@ -135,7 +135,7 @@ def get_monitor_data(db: Session):
     return {"proximos": proximos, "na_hora": na_hora, "urgentes": urgentes}
 
 # --- FUNÇÃO CRUD USUÁRIO ---
-def get_usuario_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str):
     return db.query(models.Usuario).filter(models.Usuario.email == email).first()
 def create_user(db: Session, usuario: schemas.UsuarioCreate):
     # Pega a senha do schema e a transforma em um hash

@@ -54,7 +54,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     except JWTError:
         raise credentials_exception
 
-    usuario = crud.get_usuario_by_email(db, email=token_data.email)
+    usuario = crud.get_user_by_email(db, email=token_data.email)
     if usuario is None:
         raise credentials_exception
     return usuario
