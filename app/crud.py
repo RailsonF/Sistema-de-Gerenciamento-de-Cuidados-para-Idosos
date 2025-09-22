@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
-from datetime import datetime, timedelta
+from datetime import datetime
 from . import models, schemas
 from . import auth
 
@@ -84,22 +84,33 @@ def create_administracao_log(db: Session, id_prescricao: int, id_usuario: int):
 
 # --- LÓGICA DO MONITOR ---
 def get_monitor_data(db: Session):
-    agora = datetime.now().time()
     hoje = datetime.now().date()
-
+    agora = datetime.now().time()
+    
     # 1. Encontra os IDs das prescrições administradas HOJE
     ids_administrados_hoje = db.query(models.AdministracaoLog.id_prescricao).filter(
         func.date(models.AdministracaoLog.data_hora_administracao) == hoje
     )
 
-    # 2. Busca todas as prescrições pendentes (que não estão na lista de administradas hoje)
-    #    e já carrega os dados do idoso e do medicamento (eager loading)
+    #2. Busca as prescrições ativas no dia
+    prescricoes_ativas_hoje = db.query(models.Prescricao).filter(
+        models.Prescricao.data_inicio <=hoje,
+        ((models.Prescricao.data_fim >= hoje) | (models.Prescricao.data_fim  == None))
+    ).all()
+
+    # Pega as ids das prescrições ativas
+    ids_prescricoes_ativas = [p.id for p in prescricoes_ativas_hoje]
+
+    # 3. Busca todas as prescrições pendentes (Ativas hoje e que não foram administradas hoje)
     prescricoes_pendentes = db.query(models.Prescricao).options(
         joinedload(models.Prescricao.idoso),
         joinedload(models.Prescricao.medicamento)
-    ).filter(models.Prescricao.id.notin_(ids_administrados_hoje)).all()
+    ).filter(
+        models.Prescricao.id.in_(ids_prescricoes_ativas), #Filtra pelas ativas
+        models.Prescricao.id.in_(ids_administrados_hoje)  #Exclui as já administradas 
+        ).all()
 
-    # 3. Classifica as prescrições pendentes
+    # 4. Classifica as prescrições pendentes
     proximos = []
     na_hora = []
     urgentes = []
@@ -137,6 +148,7 @@ def get_monitor_data(db: Session):
 # --- FUNÇÃO CRUD USUÁRIO ---
 def get_user_by_email(db: Session, email: str):
     return db.query(models.Usuario).filter(models.Usuario.email == email).first()
+
 def create_user(db: Session, usuario: schemas.UsuarioCreate):
     # Pega a senha do schema e a transforma em um hash
     hashed_password = auth.get_password_hash(usuario.password)

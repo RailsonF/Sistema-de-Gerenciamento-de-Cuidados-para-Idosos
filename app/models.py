@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Time, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from .database import Base
-import datetime
+from datetime import datetime
 
 class Responsavel(Base):
     __tablename__ = "responsaveis"
@@ -53,17 +53,19 @@ class Usuario(Base):
 class AdministracaoLog(Base):
     __tablename__ = "administracao_log"
     id = Column(Integer, primary_key=True, index=True)
-    data_hora_administracao = Column(DateTime, default=datetime.datetime.now )
+    data_hora_administracao = Column(DateTime, default=datetime.now )
     id_prescricao = Column(Integer, ForeignKey("prescricoes.id"))
     id_usuario = Column(Integer, ForeignKey("usuarios.id"))
-
     prescricao = relationship("Prescricao",back_populates="administracoes")
     usuario = relationship("Usuario", back_populates="administracoes")
+
 class Prescricao(Base):
     __tablename__ = "prescricoes"
     id = Column(Integer, primary_key=True, index=True)
     dosagem = Column(String)
-    horario_prescrito = Column(Time) # Usamos Time para guardar apenas a hora
+    horario_prescrito = Column(Time) # Usando Time para guardar apenas a hora
+    data_inicio = Column(Date, default=datetime.now().date())
+    data_fim = Column(Date, nullable=True) #Pode ser nulo para prescrições contínuas
     id_idoso = Column(Integer, ForeignKey("idosos.id"))
     id_medicamento = Column(Integer, ForeignKey("medicamentos.id"))
     # Relações com Idoso e Medicamento

@@ -19,6 +19,8 @@ class Medicamento(MedicamentoBase):
 class PrescricaoBase(BaseModel):
     dosagem: str
     horario_prescrito: time
+    data_inicio: date
+    data_fim: date | None = None
     id_idoso: int
     id_medicamento: int
 
