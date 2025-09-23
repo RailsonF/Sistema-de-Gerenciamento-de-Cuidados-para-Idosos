@@ -107,7 +107,7 @@ def get_monitor_data(db: Session):
         joinedload(models.Prescricao.medicamento)
     ).filter(
         models.Prescricao.id.in_(ids_prescricoes_ativas), #Filtra pelas ativas
-        models.Prescricao.id.in_(ids_administrados_hoje)  #Exclui as já administradas 
+        models.Prescricao.id.notin_(ids_administrados_hoje)  #Exclui as já administradas 
         ).all()
 
     # 4. Classifica as prescrições pendentes
