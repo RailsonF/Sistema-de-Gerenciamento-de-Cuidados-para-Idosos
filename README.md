@@ -38,8 +38,8 @@ Antes de começar, garanta que você tenha os seguintes softwares instalados:
 
 **1. Clonar o Repositório**
 ```bash
-git clone <URL_DO_SEU_REPOSITORIO_GIT>
-cd <NOME_DA_PASTA_DO_PROJETO>
+git clone <https://github.com/RailsonF/Sistema-de-Gerenciamento-de-Cuidados-para-Idosos.git>
+cd <Sistema-de-Gerenciamento-de-Cuidados-para-Idosos>
 ```
 
 **2. Criar o Arquivo de Dependências**
