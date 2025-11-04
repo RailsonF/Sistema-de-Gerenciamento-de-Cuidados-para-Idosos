@@ -62,14 +62,8 @@ def ler_responsaveis(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 
 # --- ENDPOINTS PARA MEDICAMENTOS ---
 
-@app.post("/medicamentos/", response_model=schemas.Medicamento)
-def criar_novo_medicamento(medicamento: schemas.MedicamentoCreate, db: Session = Depends(get_db)):
-    return crud.create_medicamento(db=db, medicamento=medicamento)
 
-@app.get("/medicamentos/", response_model=List[schemas.Medicamento])
-def ler_medicamentos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    medicamentos = crud.get_medicamentos(db, skip=skip, limit=limit)
-    return medicamentos
+
 
 # --- ENDPOINTS PARA PRESCRIÇÕES ---
 

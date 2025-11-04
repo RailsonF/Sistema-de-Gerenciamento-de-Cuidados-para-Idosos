@@ -12,19 +12,18 @@ router = APIRouter(
     #dependencies=[Depends(auth.get_current_user)] # PROTEGE TODAS AS ROTAS DESTE ARQUIVO
 )
 
-@router.post("/", response_model=schemas.Medicamento, status_code=status.HTTP_201_CREATED)
-def criar_novo_medicamento(medicamento: schemas.MedicamentoBase, db: Session = Depends(get_db)):
-    # (Esta é a rota de criação que você provavelmente já tinha no main.py)
-    # (Podemos movê-la para cá para organizar)
+
+
+@router.post("/novo/", response_model=schemas.Medicamento)
+def criar_novo_medicamento(medicamento: schemas.MedicamentoCreate, db: Session = Depends(get_db)):
     return crud.create_medicamento(db=db, medicamento=medicamento)
 
-@router.get("/", response_model=List[schemas.Medicamento])
-def listar_todos_medicamentos(db: Session = Depends(get_db)):
-    # (Esta é a rota de listagem que você provavelmente já tinha)
-    return crud.get_medicamentos(db=db)
+@router.get("/listar/", response_model=List[schemas.Medicamento])
+def ler_medicamentos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    medicamentos = crud.get_medicamentos(db, skip=skip, limit=limit)
+    return medicamentos
 
-# --- NOVO ENDPOINT DE ATUALIZAÇÃO (PUT) ---
-@router.put("/{medicamento_id}", response_model=schemas.Medicamento)
+@router.put("/editar/{medicamento_id}", response_model=schemas.Medicamento)
 def atualizar_medicamento(
     medicamento_id: int, 
     medicamento_data: schemas.MedicamentoBase, 
@@ -35,8 +34,7 @@ def atualizar_medicamento(
         raise HTTPException(status_code=404, detail="Medicamento não encontrado")
     return db_medicamento
 
-# --- NOVO ENDPOINT DE EXCLUSÃO (DELETE) ---
-@router.delete("/{medicamento_id}", response_model=schemas.Medicamento)
+@router.delete("/excluir/{medicamento_id}", response_model=schemas.Medicamento)
 def deletar_medicamento(medicamento_id: int, db: Session = Depends(get_db)):
     deleted_medicamento = crud.delete_medicamento(db, medicamento_id)
 
@@ -46,5 +44,4 @@ def deletar_medicamento(medicamento_id: int, db: Session = Depends(get_db)):
     if deleted_medicamento == "CONFLITO":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, 
                         detail="Este medicamento não pode ser excluído pois está em uso em uma prescrição.")
-
     return deleted_medicamento
