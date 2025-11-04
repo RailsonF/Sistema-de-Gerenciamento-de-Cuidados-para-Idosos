@@ -6,7 +6,7 @@ from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
 from . import models #Importa os modelos
 from .dependencies import get_db
-from .routes import auth_routes
+from .routes import auth_routes, medicamentos
 # Adicione esta linha temporariamente para apagar as tabelas
 #models.Base.metadata.drop_all(bind=engine) 
 
@@ -18,6 +18,7 @@ app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
 
 #Incluindo os roteadores na aplicação 
 app.include_router(auth_routes.router)
+app.include_router(medicamentos.router)
 
 #Criando um endpoint de teste
 @app.get("/", tags=["Root"])

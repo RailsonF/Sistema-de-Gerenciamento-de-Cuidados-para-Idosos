@@ -1,7 +1,7 @@
 # app/crud.py
-
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime
 from . import models, schemas
 from . import auth
@@ -54,11 +54,36 @@ def create_responsavel(db: Session, responsavel: schemas.ResponsavelCreate):
 
 # --- Funções CRUD para Medicamento ---
 def get_medicamento(db: Session, medicamento_id: int):
+    """Busca um único medicamento pelo seu id"""
     return db.query(models.Medicamento).filter(models.Medicamento.id == medicamento_id).first()
 
 def get_medicamentos(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Medicamento).offset(skip).limit(limit).all()
 
+def update_medicamento(db: Session, medicamento_id: int, medicamento_data):
+    # Atualiza diretamente no banco
+    db.query(models.Medicamento).filter(models.Medicamento.id == medicamento_id).update(
+        medicamento_data.dict(exclude_unset=True)
+    )
+    db.commit()
+    
+    # Retorna o objeto atualizado
+    return db.query(models.Medicamento).filter(models.Medicamento.id == medicamento_id).first()
+
+def delete_medicamento(db: Session, medicamento_id: int):
+    """Exclui um medicamento"""
+    db_medicamento = db.query(models.Medicamento).get(medicamento_id)   
+
+    if not db_medicamento:
+        return None #Medicamento não encontrado
+
+    db.delete(db_medicamento)
+    try:
+        db.commit
+    except IntegrityError:
+        db.rollback()
+        return "CONFLITO"
+    return db_medicamento #retorna o item que foi excluido
 def create_medicamento(db: Session, medicamento: schemas.MedicamentoCreate):
     db_medicamento = models.Medicamento(**medicamento.dict())
     db.add(db_medicamento)
