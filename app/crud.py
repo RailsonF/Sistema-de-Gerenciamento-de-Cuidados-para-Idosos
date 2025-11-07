@@ -33,6 +33,33 @@ def create_idoso(db: Session, idoso: schemas.IdosoCreate):
     db.refresh(db_idoso) # Atualiza o objeto com os dados do banco (como o novo id)
     return db_idoso
 
+def update_idoso(db: Session, idoso_id: int, idoso_data):
+    db.query(models.Idoso).filter(models.Idoso.id == idoso_id).update(idoso_data.dict(exclude_unset=True))
+    db.commit()
+    return db.query(models.Idoso).filter(models.Idoso.id == idoso_id).first()
+
+def deleted_idoso(db: Session, idoso_id:int):
+    db_idoso = db.query(models.Idoso).get(idoso_id)
+
+    if not db_idoso:
+        return None
+    
+    db.delete(db_idoso)
+    try:
+        db.commit
+    except IntegrityError:
+        db.rollback()
+        return "CONFLITO"
+    return db_idoso
+
+
+
+
+
+
+
+
+
 # --- Funções CRUD para Responsavel ---
 def get_responsavel_by_cpf(db: Session, cpf: str):
     return db.query(models.Responsavel).filter(models.Responsavel.cpf == cpf).first()

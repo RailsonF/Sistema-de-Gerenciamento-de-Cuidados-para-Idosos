@@ -6,7 +6,7 @@ from . import crud, models, schemas
 from .database import SessionLocal, engine #Importa o "motor do banco"
 from . import models #Importa os modelos
 from .dependencies import get_db
-from .routes import auth_routes, medicamentos
+from .routes import auth_routes, medicamentos, idosos
 # Adicione esta linha temporariamente para apagar as tabelas
 #models.Base.metadata.drop_all(bind=engine) 
 
@@ -19,6 +19,7 @@ app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
 #Incluindo os roteadores na aplicação 
 app.include_router(auth_routes.router)
 app.include_router(medicamentos.router)
+app.include_router(idosos.router)
 
 #Criando um endpoint de teste
 @app.get("/", tags=["Root"])
@@ -29,18 +30,9 @@ async def ler_raiz():
 # Função "Dependency" para gerenciar a sessão do banco de dados
 
 
-@app.post("/idosos/", response_model=schemas.Idoso)
-def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
-    # (Opcional, mas boa prática) Verificar se o CPF já existe
-    # db_idoso = crud.get_idoso_by_cpf(db, cpf=idoso.cpf)
-    # if db_idoso:
-    #     raise HTTPException(status_code=400, detail="CPF já cadastrado")
-    return crud.create_idoso(db=db, idoso=idoso)
 
-@app.get("/idosos/", response_model=List[schemas.Idoso])
-def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
-    idosos = crud.get_idosos(db, skip= skip, limit=limit)
-    return idosos
+
+
 
 # --- ENDPOINTS PARA RESPONSAVEIS ---
 
