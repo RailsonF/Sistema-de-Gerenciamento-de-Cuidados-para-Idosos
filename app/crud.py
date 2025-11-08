@@ -1,4 +1,5 @@
 # app/crud.py
+from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -34,9 +35,26 @@ def create_idoso(db: Session, idoso: schemas.IdosoCreate):
     return db_idoso
 
 def update_idoso(db: Session, idoso_id: int, idoso_data):
-    db.query(models.Idoso).filter(models.Idoso.id == idoso_id).update(idoso_data.dict(exclude_unset=True))
+    # Verificar se o idoso existe
+    db_idoso = db.query(models.Idoso).filter(models.Idoso.id == idoso_id).first()
+    if not db_idoso:
+        return None
+
+    # Se CPF está sendo enviado, verificar duplicação
+    if idoso_data.cpf is not None:
+        cpf_existente = (
+            db.query(models.Idoso).filter(models.Idoso.cpf == idoso_data.cpf, models.Idoso.id != idoso_id).first()
+        )
+        if cpf_existente:
+            raise HTTPException(status_code=400, detail="CPF já está cadastrado para outro idoso.")
+
+    # Atualizar
+    for campo, valor in idoso_data.dict(exclude_unset=True).items():
+        setattr(db_idoso, campo, valor)
+
     db.commit()
-    return db.query(models.Idoso).filter(models.Idoso.id == idoso_id).first()
+    db.refresh(db_idoso)
+    return db_idoso
 
 def deleted_idoso(db: Session, idoso_id:int):
     db_idoso = db.query(models.Idoso).get(idoso_id)
@@ -46,19 +64,11 @@ def deleted_idoso(db: Session, idoso_id:int):
     
     db.delete(db_idoso)
     try:
-        db.commit
+        db.commit()
     except IntegrityError:
         db.rollback()
         return "CONFLITO"
     return db_idoso
-
-
-
-
-
-
-
-
 
 # --- Funções CRUD para Responsavel ---
 def get_responsavel_by_cpf(db: Session, cpf: str):
@@ -78,6 +88,26 @@ def create_responsavel(db: Session, responsavel: schemas.ResponsavelCreate):
     db.commit()
     db.refresh(db_responsavel)
     return db_responsavel
+
+def update_responsavel(db: Session, responsavel_id: int, responsavel_data):
+    db.query(models.Responsavel).filter(models.Responsavel.id == responsavel_id).update(
+        responsavel_data.dict(exclude_unset = True)
+    )
+    db.commit()
+    return db.query(models.Responsavel).filter(models.Responsavel.id == responsavel_id).first()
+
+def deleted_responsavel(db: Session, responsavel_id:int):
+    db_responsavel = db.query(models.Responsavel).get(responsavel_id)
+    if not db_responsavel:
+        return None #Medicamento não encontrado
+
+    db.delete(db_responsavel)
+    try:
+        db.commit
+    except IntegrityError:
+        db.rollback()
+        return "CONFLITO"
+    return db_responsavel #retorna o item que foi excluido
 
 # --- Funções CRUD para Medicamento ---
 def get_medicamento(db: Session, medicamento_id: int):

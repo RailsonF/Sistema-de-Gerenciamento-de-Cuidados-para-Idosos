@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -10,10 +10,6 @@ router = APIRouter(
     tags=["Idosos"],  # Agrupa na documentação do /docs
     #dependencies=[Depends(auth.get_current_user)] # PROTEGE TODAS AS ROTAS DESTE ARQUIVO
 )
-@router.get("/idosos/", response_model=List[schemas.Idoso])
-def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
-    idosos = crud.get_idosos(db, skip= skip, limit=limit)
-    return idosos
 
 @router.post("/idosos/", response_model=schemas.Idoso)
 def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
@@ -22,6 +18,12 @@ def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
     # if db_idoso:
     #     raise HTTPException(status_code=400, detail="CPF já cadastrado")
     return crud.create_idoso(db=db, idoso=idoso)
+
+@router.get("/idosos/", response_model=List[schemas.Idoso])
+def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
+    idosos = crud.get_idosos(db, skip= skip, limit=limit)
+    return idosos
+
 @router.put("/editar/{idoso_id}", response_model=schemas.Idoso)
 def atualizar_idoso(
     idoso_id: int, 
