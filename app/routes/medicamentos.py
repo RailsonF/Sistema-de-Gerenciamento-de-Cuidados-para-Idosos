@@ -26,7 +26,7 @@ def ler_medicamentos(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 @router.put("/editar/{medicamento_id}", response_model=schemas.Medicamento)
 def atualizar_medicamento(
     medicamento_id: int, 
-    medicamento_data: schemas.MedicamentoBase, 
+    medicamento_data: schemas.MedicamentoUpdate, 
     db: Session = Depends(get_db)
 ):
     db_medicamento = crud.update_medicamento(db, medicamento_id, medicamento_data)

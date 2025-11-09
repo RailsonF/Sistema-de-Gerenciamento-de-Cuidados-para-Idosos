@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime, date, time
-from typing import List
+from typing import List, Optional
 
 #---- Schemas para Medicamento ----#
 class MedicamentoBase(BaseModel):
@@ -9,6 +9,10 @@ class MedicamentoBase(BaseModel):
 
 class MedicamentoCreate(MedicamentoBase):
     pass
+
+class MedicamentoUpdate(BaseModel):
+   nome: Optional[str] = None
+   unidade_medida: Optional[str]
 
 class Medicamento(MedicamentoBase):
     id: int
