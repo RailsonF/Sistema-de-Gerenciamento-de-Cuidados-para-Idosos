@@ -14,16 +14,16 @@ router = APIRouter(
 
 
 
-@router.post("/novo/", response_model=schemas.Medicamento)
+@router.post("/", response_model=schemas.Medicamento)
 def criar_novo_medicamento(medicamento: schemas.MedicamentoCreate, db: Session = Depends(get_db)):
     return crud.create_medicamento(db=db, medicamento=medicamento)
 
-@router.get("/listar/", response_model=List[schemas.Medicamento])
+@router.get("/", response_model=List[schemas.Medicamento])
 def ler_medicamentos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     medicamentos = crud.get_medicamentos(db, skip=skip, limit=limit)
     return medicamentos
 
-@router.put("/editar/{medicamento_id}", response_model=schemas.Medicamento)
+@router.patch("/{medicamento_id}", response_model=schemas.Medicamento)
 def atualizar_medicamento(
     medicamento_id: int, 
     medicamento_data: schemas.MedicamentoUpdate, 
@@ -34,7 +34,7 @@ def atualizar_medicamento(
         raise HTTPException(status_code=404, detail="Medicamento não encontrado")
     return db_medicamento
 
-@router.delete("/excluir/{medicamento_id}", response_model=schemas.Medicamento)
+@router.delete("/{medicamento_id}", response_model=schemas.Medicamento)
 def deletar_medicamento(medicamento_id: int, db: Session = Depends(get_db)):
     deleted_medicamento = crud.delete_medicamento(db, medicamento_id)
 

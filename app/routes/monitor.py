@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 # --- ENDPOINT DO MONITOR ---
-@router.get("/monitor/", response_model=schemas.MonitorData)
+@router.get("/", response_model=schemas.MonitorData)
 def ler_dados_monitor(db: Session = Depends(get_db)):
     dados = crud.get_monitor_data(db)
     return dados

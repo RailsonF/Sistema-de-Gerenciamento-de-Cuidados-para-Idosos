@@ -125,3 +125,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
    email: str | None = None
+
+# ---SCHEMAS PARA LOGIN ---
+class LoginRequest(BaseModel):
+   email: str
+   password: str

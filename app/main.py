@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes, monitor
 
 # Adicione esta linha temporariamente para apagar as tabelas
@@ -9,6 +11,16 @@ from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
+
+#Configurando o CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 #Incluindo os roteadores na aplicação 
 app.include_router(auth_routes.router)
