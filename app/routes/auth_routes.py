@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Autenticação"] # Agrupa os endpoints na documentação
 )
 
-@router.post("/usuarios/", response_model=schemas.Usuario)
+@router.post("/usuarios", response_model=schemas.Usuario)
 def criar_novo_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     db_usuario = crud.get_user_by_email(db, email=usuario.email)
     if db_usuario:

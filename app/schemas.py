@@ -39,9 +39,9 @@ class Prescricao(PrescricaoBase):
 
 #---- Schemas para Responsável ----#
 class ResponsavelBase(BaseModel):
-  nome_completo: str
+  nome: str
   cpf: str
-  telefone: str | None = None
+  phone: str | None = None
   email: str | None = None
 
 class ResponsavelCreate(ResponsavelBase):
@@ -107,7 +107,7 @@ class MonitorData(BaseModel):
 
 #Schemas para usuario
 class UsuarioBase(BaseModel):
-   nome_completo: str
+   nome: str
    email: str
 
 class UsuarioCreate(UsuarioBase):
