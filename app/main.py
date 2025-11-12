@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes, monitor
-
-# Adicione esta linha temporariamente para apagar as tabelas
+from . import models
+from .database import engine
+ #Adicione esta linha temporariamente para apagar as tabelas
 #models.Base.metadata.drop_all(bind=engine) 
 
 #Cria as tabelas no banco de dados
-#models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")
