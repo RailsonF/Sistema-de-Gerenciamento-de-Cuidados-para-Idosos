@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 # --- ENDPOINTS PARA PRESCRIÇÕES ---
-@router.post("/prescricoes/", response_model=schemas.Prescricao)
+@router.post("/", response_model=schemas.Prescricao)
 def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = Depends(get_db)):
     # Validação: Verificar se o idoso e o medicamento existem antes de criar a prescrição
     db_idoso = crud.get_idoso(db, idoso_id=prescricao.id_idoso)
@@ -25,7 +25,7 @@ def criar_nova_prescricao(prescricao: schemas.PrescricaoCreate, db: Session = De
 
     return crud.create_prescricao(db=db, prescricao=prescricao)
 
-@router.post("/prescricoes/{prescricao_id}/administrar", response_model=schemas.AdministracaoLog)
+@router.post("/{prescricao_id}", response_model=schemas.AdministracaoLog)
 def registrar_administracao(
     prescricao_id: int, 
     db: Session = Depends(get_db),
