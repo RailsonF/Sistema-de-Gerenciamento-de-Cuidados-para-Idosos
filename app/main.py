@@ -5,10 +5,10 @@ from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes
 from . import models
 from .database import engine
  #Adicione esta linha temporariamente para apagar as tabelas
-models.Base.metadata.drop_all(bind=engine) 
+#models.Base.metadata.drop_all(bind=engine) 
 
 #Cria as tabelas no banco de dados
-models.Base.metadata.create_all(bind=engine)
+#models.Base.metadata.create_all(bind=engine)
 
 #Cria a instância da aplicação
 app = FastAPI(title="Sistema de Monitoramento de Medicamentos")

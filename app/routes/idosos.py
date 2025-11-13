@@ -11,7 +11,7 @@ router = APIRouter(
     #dependencies=[Depends(auth.get_current_user)] # PROTEGE TODAS AS ROTAS DESTE ARQUIVO
 )
 
-@router.post("/idosos/", response_model=schemas.Idoso)
+@router.post("/", response_model=schemas.Idoso)
 def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
     # (Opcional, mas boa prática) Verificar se o CPF já existe
     # db_idoso = crud.get_idoso_by_cpf(db, cpf=idoso.cpf)
@@ -19,12 +19,12 @@ def criar_novo_idoso(idoso: schemas.IdosoCreate, db: Session = Depends(get_db)):
     #     raise HTTPException(status_code=400, detail="CPF já cadastrado")
     return crud.create_idoso(db=db, idoso=idoso)
 
-@router.get("/idosos/", response_model=List[schemas.Idoso])
+@router.get("/", response_model=List[schemas.Idoso])
 def ler_idosos(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
     idosos = crud.get_idosos(db, skip= skip, limit=limit)
     return idosos
 
-@router.put("/editar/{idoso_id}", response_model=schemas.Idoso)
+@router.put("/{idoso_id}", response_model=schemas.Idoso)
 def atualizar_idoso(
     idoso_id: int, 
     idoso_data: schemas.idosoBase, 
@@ -35,7 +35,7 @@ def atualizar_idoso(
         raise HTTPException(status_code=404, detail="Idoso não encontrado")
     return db_idoso
 
-@router.delete("/excluir/{idoso_id}")
+@router.delete("/{idoso_id}")
 def excluir_idoso(
     idoso_id: int, 
     db:Session = Depends(get_db)):
