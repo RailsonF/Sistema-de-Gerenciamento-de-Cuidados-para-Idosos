@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session #Importa a classe FastAPi
 from ..dependencies import get_db
 from ..auth import get_current_user
 from .. import crud, models, schemas
+from typing import List
 
 router = APIRouter(
     prefix="/prescricoes", # Todas as rotas aqui começarão com /medicamentos
@@ -36,3 +37,8 @@ def registrar_administracao(
         id_prescricao=prescricao_id,
         id_usuario= current_user.id
         )
+
+@router.get("/", response_model=List[schemas.Prescricao])
+def ler_prescricoes(skip: int =0 , limit: int = 100, db: Session = Depends(get_db)):
+    db_prescricoes = crud.get_prescricoes(db, skip= skip, limit=limit)
+    return db_prescricoes

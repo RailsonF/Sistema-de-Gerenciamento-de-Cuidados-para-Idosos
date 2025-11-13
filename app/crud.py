@@ -156,6 +156,16 @@ def create_prescricao(db: Session, prescricao: schemas.PrescricaoCreate):
     db.refresh(db_prescricao)
     return db_prescricao
 
+def get_prescricoes(db: Session, skip: int = 0, limit: int = 100):
+    return (
+        db.query(models.Prescricao)
+        .options(joinedload(models.Prescricao.idoso))
+        .options(joinedload(models.Prescricao.medicamento))
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
 # --- Funções CRUD para AdministracaoLog ---
 def create_administracao_log(db: Session, id_prescricao: int, id_usuario: int):
     db_log = models.AdministracaoLog(id_prescricao=id_prescricao, id_usuario = id_usuario)
@@ -244,3 +254,6 @@ def create_user(db: Session, usuario: schemas.UsuarioCreate):
     db.commit()
     db.refresh(db_usuario)
     return db_usuario
+
+def get_funcionarios(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Usuario).offset(skip).limit(limit).all()
