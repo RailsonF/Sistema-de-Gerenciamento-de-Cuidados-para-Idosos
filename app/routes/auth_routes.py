@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-
+from typing import List
 from .. import crud, schemas, auth
 from ..dependencies import get_db
 
@@ -29,3 +29,7 @@ def login_para_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db
         data={"sub": usuario.email}
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get("/me", response_model=schemas.Usuario)
+def ler_usuario_logado(current_user: schemas.Usuario = Depends(auth.get_current_user)):
+    return current_user

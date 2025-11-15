@@ -141,6 +141,7 @@ def delete_medicamento(db: Session, medicamento_id: int):
         db.rollback()
         return "CONFLITO"
     return db_medicamento #retorna o item que foi excluido
+
 def create_medicamento(db: Session, medicamento: schemas.MedicamentoCreate):
     db_medicamento = models.Medicamento(**medicamento.dict())
     db.add(db_medicamento)

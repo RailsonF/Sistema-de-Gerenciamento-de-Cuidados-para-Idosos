@@ -19,6 +19,15 @@ class Medicamento(MedicamentoBase):
     class Config:
         from_atributes = True
 
+class IdosoLight(BaseModel):
+    id: int
+    nome_completo: str
+    quarto: str | None = None
+
+    class Config:
+        from_attributes = True
+
+
 #---- Schemas para Prescricao ----#
 class PrescricaoBase(BaseModel):
     dosagem: str
@@ -34,6 +43,7 @@ class PrescricaoCreate(PrescricaoBase):
 class Prescricao(PrescricaoBase):
     id: int
     medicamento: Medicamento # Para aninhar os dados do medicamento
+    idoso: IdosoLight
     class Config:
         from_atributes = True
 

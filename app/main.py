@@ -1,9 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes, monitor
-from . import models
-from .database import engine
+from .routes import auth_routes, medicamentos, idosos, responsaveis, prescricoes, monitor, usuarios
  #Adicione esta linha temporariamente para apagar as tabelas
 #models.Base.metadata.drop_all(bind=engine) 
 
@@ -30,6 +27,7 @@ app.include_router(idosos.router)
 app.include_router(responsaveis.router)
 app.include_router(prescricoes.router)
 app.include_router(monitor.router)
+app.include_router(usuarios.router)
 
 #Criando um endpoint de teste
 @app.get("/", tags=["Root"])
